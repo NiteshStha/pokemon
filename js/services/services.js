@@ -1,26 +1,27 @@
 const services = {
   /**
    * Get the Effectiveness of the Attack of the Pokemon on the Opponent's Pokemon.
-   * @param {Object} attack The Attack Object
-   * @param {Object} oppPokemon The Opponent Pokemon Object
+   * @param {object} attack The Attack Object of the Pokemon.
+   * @param {object} pokemon The Pokemon Object that is being attacked.
+   * @returns {number} Returns the effectiveness multiplier.
    */
-  getEffectiveness: (attack, oppPokemon) => {
-    if (Array.isArray(oppPokemon.type)) {
-      return oppPokemon.type.reduce(
-        (effect, type) => effect * TYPE_EFFECTIVENESS_CHART[attack.type][type],
+  getEffectiveness: (attack, pokemon) => {
+    if (Array.isArray(pokemon.type)) {
+      return pokemon.type.reduce(
+        (effect, type) => effect * TYPE_EFFECTIVENESS_MATRIX[attack.type][type],
         1
       );
     }
-    return TYPE_EFFECTIVENESS_CHART[attack.type][oppPokemon.type];
+    return TYPE_EFFECTIVENESS_MATRIX[attack.type][pokemon.type];
   },
 };
 
 const oppoPokemon = {
-  type: [TYPES.GHOST, TYPES.GROUND],
+  type: [TYPES.DRAGON, TYPES.FAIRY],
 };
 
 const attack = {
-  type: TYPES.ELECTRIC,
+  type: TYPES.ICE,
 };
 
 console.log(services.getEffectiveness(attack, oppoPokemon));
