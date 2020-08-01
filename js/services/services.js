@@ -14,14 +14,6 @@ const services = {
     }
     return TYPE_EFFECTIVENESS_MATRIX[attack.type][pokemon.type];
   },
-};
 
-const oppoPokemon = {
-  type: [TYPES.DRAGON, TYPES.FAIRY],
+  getType: (typeId) => Object.keys(TYPES).find((key) => TYPES[key] === typeId),
 };
-
-const attack = {
-  type: TYPES.ICE,
-};
-
-console.log(services.getEffectiveness(attack, oppoPokemon));
