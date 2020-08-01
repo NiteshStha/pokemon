@@ -14,6 +14,4 @@ const services = {
     }
     return TYPE_EFFECTIVENESS_MATRIX[attack.type][pokemon.type];
   },
-
-  getType: (typeId) => Object.keys(TYPES).find((key) => TYPES[key] === typeId),
 };
