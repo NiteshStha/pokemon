@@ -18,8 +18,8 @@ class Pokemon {
   };
 }
 
-const pk = new Pokemon(POKEMON.DRAGONITE);
-const pk2 = new Pokemon(POKEMON.DRAGONITE);
-console.log(pk);
-console.log(pk.getType());
-console.log(services.getEffectiveness(pk.moves[2].type, pk2.type));
+// const pk = new Pokemon(POKEMON.DRAGONITE);
+// const pk2 = new Pokemon(POKEMON.DRAGONITE);
+// console.log(pk);
+// console.log(pk.getType());
+// console.log(services.getEffectiveness(pk.moves[2].type, pk2.type));
