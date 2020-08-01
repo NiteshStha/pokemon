@@ -40,3 +40,8 @@ const TYPE_EFFECTIVENESS_MATRIX = [
   [1, 1/2, 1/2, 1/2, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1/2, 2],
   [1, 1/2, 1, 1, 1, 1, 2, 1/2, 1, 1, 1, 1, 1, 1, 2, 2, 1/2, 1]
 ];
+
+const ATTACK_TYPE = {
+  ATTACK: 'ATTACK',
+  SPECIAL_ATTACK: 'SPECIAL_ATTACK',
+};

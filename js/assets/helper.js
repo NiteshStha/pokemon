@@ -23,11 +23,3 @@ async function loadAllImages() {
 
   IMAGE_COLLECTION = await Promise.all(images);
 }
-
-loadAllImages().then(() => {
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = 800;
-  canvas.height = 400;
-  ctx.drawImage(getImage('BACKGROUND'), 0, 0, 800, 400);
-});
