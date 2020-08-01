@@ -8,6 +8,14 @@ const services = {
   RNG: (min, max) => Math.floor(Math.random() * (max - min + 1) + min),
 
   /**
+   * Returns the Image from the provided name.
+   * @param {string} name The name of the Image.
+   * @returns {number} Returns the Image.
+   */
+  getImage: (name) =>
+    IMAGE_COLLECTION.find((image) => image.name === name).image,
+
+  /**
    * Get the Effectiveness of the Attack of the Pokemon on the Opponent's Pokemon.
    * @param {number} attackType The Attack Object of the Pokemon.
    * @param {number} pokemonType The Pokemon Object that is being attacked.

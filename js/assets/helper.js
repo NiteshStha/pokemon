@@ -12,9 +12,6 @@ const loadImage = (url, key) => {
   });
 };
 
-const getImage = (name) =>
-  IMAGE_COLLECTION.find((image) => image.name === name).image;
-
 async function loadAllImages() {
   let images = [];
   Object.keys(IMAGE_URLS).forEach((key) => {
