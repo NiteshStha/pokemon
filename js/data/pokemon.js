@@ -2,7 +2,7 @@ const POKEMON = {
   DRAGONITE: {
     name: 'Dragonite',
     type: [TYPES.DRAGON, TYPES.FLYING],
-    level: 50,
+    level: 100,
     stats: {
       hp: 386,
       attack: 403,
@@ -46,7 +46,7 @@ const POKEMON = {
   BLASTOISE: {
     name: 'Blastoise',
     type: TYPES.WATER,
-    level: 50,
+    level: 100,
     stats: {
       hp: 362,
       attack: 291,

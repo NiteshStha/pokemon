@@ -51,3 +51,37 @@ const MOVES_POSITION = {
   MOVE_3: { x: 50, y: 615 },
   MOVE_4: { x: 380, y: 615 },
 };
+
+const PLAYER_POKEMON_POSITION = {
+  width: 240,
+  height: 240,
+  x: 120,
+  y: 260,
+};
+
+const OPPONENT_POKEMON_POSITION = {
+  width: 280,
+  height: 280,
+  x: 520,
+  y: 40,
+};
+
+const PLAYER_POKEMON_NAME = {
+  x: 600,
+  y: 412,
+};
+
+const PLAYER_POKEMON_LEVEL = {
+  x: 760,
+  y: 412,
+};
+
+const OPPONENT_POKEMON_NAME = {
+  x: 60,
+  y: 72,
+};
+
+const OPPONENT_POKEMON_LEVEL = {
+  x: 220,
+  y: 72,
+};
