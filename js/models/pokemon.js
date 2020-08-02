@@ -2,6 +2,7 @@ class Pokemon {
   name;
   type;
   level;
+  sprites;
   stats;
   moves;
 
@@ -9,7 +10,8 @@ class Pokemon {
     this.name = pokemon.name;
     this.type = pokemon.type;
     this.level = pokemon.level;
-    this.stats = pokemon.stats;
+    this.sprites = pokemon.sprites;
+    this.stats = { ...pokemon.stats };
     this.moves = pokemon.moves;
   }
 
@@ -28,9 +30,9 @@ class Pokemon {
   };
 }
 
-const pk1 = new Pokemon(POKEMON.DRAGONITE);
-const pk2 = new Pokemon(POKEMON.BLASTOISE);
-pk1.useMove(pk1.moves[1], pk2);
-console.log(pk2.stats.hp);
-pk2.useMove(pk2.moves[0], pk1);
-console.log(pk1.stats.hp);
+// const pk1 = new Pokemon(POKEMON.DRAGONITE);
+// const pk2 = new Pokemon(POKEMON.BLASTOISE);
+// pk1.useMove(pk1.moves[1], pk2);
+// console.log(pk2.stats.hp);
+// pk2.useMove(pk2.moves[0], pk1);
+// console.log(pk1.stats.hp);

@@ -1,5 +1,9 @@
 class Battle {
   ctx;
+  playerPokemons;
+  opponentPokemons;
+  playerPokemonIndex = 0;
+  opponentPokemonIndex = 0;
   selectorX = 0;
   selectorY = 0;
   /**
@@ -16,8 +20,10 @@ class Battle {
    */
   selectedMove = 0;
 
-  constructor(ctx) {
+  constructor(ctx, playerPokemons, opponentPokemons) {
     this.ctx = ctx;
+    this.playerPokemons = playerPokemons;
+    this.opponentPokemons = opponentPokemons;
     window.addEventListener('keydown', this.#actionKeyEvents);
   }
 
@@ -35,12 +41,14 @@ class Battle {
       BATTLE_BACK_DIMENSIONS.height
     );
 
-    // Draws the player health bar
+    // Draws the player health barc
     this.ctx.drawImage(
       services.getSprite(SPRITE_NAMES.HEALTH_BAR),
       PLAYER_HEALTH_BAR_DIMENSIONS.x,
       PLAYER_HEALTH_BAR_DIMENSIONS.y,
-      PLAYER_HEALTH_BAR_DIMENSIONS.width,
+      (this.playerPokemons[this.playerPokemonIndex].stats.hp /
+        this.playerPokemons[this.playerPokemonIndex].stats.hp) *
+        PLAYER_HEALTH_BAR_DIMENSIONS.width,
       PLAYER_HEALTH_BAR_DIMENSIONS.height
     );
 
@@ -58,7 +66,9 @@ class Battle {
       services.getSprite(SPRITE_NAMES.HEALTH_BAR),
       OPPONENT_HEALTH_BAR_DIMENSIONS.x,
       OPPONENT_HEALTH_BAR_DIMENSIONS.y,
-      OPPONENT_HEALTH_BAR_DIMENSIONS.width,
+      (this.opponentPokemons[this.opponentPokemonIndex].stats.hp /
+        this.opponentPokemons[this.opponentPokemonIndex].stats.hp) *
+        OPPONENT_HEALTH_BAR_DIMENSIONS.width,
       OPPONENT_HEALTH_BAR_DIMENSIONS.height
     );
 
@@ -71,18 +81,39 @@ class Battle {
       OPPONENT_INFO_BAR_DIMENSIONS.height
     );
 
-    // Draws the player's moves bar
-    this.ctx.drawImage(
-      services.getSprite(SPRITE_NAMES.MOVES_BAR),
-      MOVES_BAR_DIMENSIONS.x,
-      MOVES_BAR_DIMENSIONS.y,
-      MOVES_BAR_DIMENSIONS.width,
-      MOVES_BAR_DIMENSIONS.height
-    );
+    if (this.state === 'SELECTION') {
+      // Draws the empty actions bar
+      this.ctx.drawImage(
+        services.getSprite(SPRITE_NAMES.NO_ACTION),
+        MOVES_BAR_DIMENSIONS.x,
+        MOVES_BAR_DIMENSIONS.y,
+        MOVES_BAR_DIMENSIONS.width,
+        MOVES_BAR_DIMENSIONS.height
+      );
+      this.ctx.font = 'bold 32px Nunito';
+      this.ctx.fillText(
+        'Choose Action',
+        EMPTY_TEXT_DIMENSIONS.x,
+        EMPTY_TEXT_DIMENSIONS.y
+      );
+    }
+
+    if (this.state === 'ATTACK' || this.state === 'ITEMS') {
+      // Draws the player's moves bar
+      this.ctx.drawImage(
+        services.getSprite(SPRITE_NAMES.MOVES_BAR),
+        MOVES_BAR_DIMENSIONS.x,
+        MOVES_BAR_DIMENSIONS.y,
+        MOVES_BAR_DIMENSIONS.width,
+        MOVES_BAR_DIMENSIONS.height
+      );
+    }
 
     // Draws the player's pokemon
     this.ctx.drawImage(
-      services.getSprite(SPRITE_NAMES.DRAGONITE_BACK),
+      services.getSprite(
+        this.playerPokemons[this.playerPokemonIndex].sprites.back
+      ),
       PLAYER_POKEMON_POSITION.x,
       PLAYER_POKEMON_POSITION.y,
       PLAYER_POKEMON_POSITION.width,
@@ -91,7 +122,9 @@ class Battle {
 
     // Draws the opponent's pokemon
     this.ctx.drawImage(
-      services.getSprite(SPRITE_NAMES.BLASTOISE_FRONT),
+      services.getSprite(
+        this.opponentPokemons[this.opponentPokemonIndex].sprites.front
+      ),
       OPPONENT_POKEMON_POSITION.x,
       OPPONENT_POKEMON_POSITION.y,
       OPPONENT_POKEMON_POSITION.width,
@@ -100,62 +133,76 @@ class Battle {
 
     // Styling the fonts
     this.ctx.font = 'bold 28px Nunito';
+    this.ctx.fillStyle = '#000';
 
     // Draws the Attack or Items Menu
     this.ctx.fillText('Attack', 745, 560);
     this.ctx.fillText('Items', 750, 610);
 
+    this.#drawPokemonInfos();
+    this.#drawBattleMenu();
+  };
+
+  #drawPokemonInfos = () => {
     // Styling the fonts
     this.ctx.font = 'bold 22px Nunito';
 
-    // Draws the player's pokemon move 1
-    this.ctx.fillText(
-      'Dragon Pulse',
-      MOVES_POSITION.MOVE_1.x,
-      MOVES_POSITION.MOVE_1.y
-    );
-
-    // Draws the player's pokemon move 2
-    this.ctx.fillText(
-      'Hurricane',
-      MOVES_POSITION.MOVE_2.x,
-      MOVES_POSITION.MOVE_2.y
-    );
-
-    // Draws the player's pokemon move 3
-    this.ctx.fillText(
-      'Outrage',
-      MOVES_POSITION.MOVE_3.x,
-      MOVES_POSITION.MOVE_3.y
-    );
-
-    // Draws the player's pokemon move 4
-    this.ctx.fillText(
-      'Thunder Punch',
-      MOVES_POSITION.MOVE_4.x,
-      MOVES_POSITION.MOVE_4.y
-    );
-
     // Draws the player's pokemon name and level
     this.ctx.fillText(
-      'Dragonite',
+      this.playerPokemons[this.playerPokemonIndex].name,
       PLAYER_POKEMON_NAME.x,
       PLAYER_POKEMON_NAME.y
     );
-    this.ctx.fillText('Lv100', PLAYER_POKEMON_LEVEL.x, PLAYER_POKEMON_LEVEL.y);
+    this.ctx.fillText(
+      'Lv' + this.playerPokemons[this.playerPokemonIndex].level,
+      PLAYER_POKEMON_LEVEL.x,
+      PLAYER_POKEMON_LEVEL.y
+    );
 
     // Draws the opponent's pokemon name and level
     this.ctx.fillText(
-      'Blastoise',
+      this.opponentPokemons[this.opponentPokemonIndex].name,
       OPPONENT_POKEMON_NAME.x,
       OPPONENT_POKEMON_NAME.y
     );
     this.ctx.fillText(
-      'Lv100',
+      'Lv' + this.opponentPokemons[this.opponentPokemonIndex].level,
       OPPONENT_POKEMON_LEVEL.x,
       OPPONENT_POKEMON_LEVEL.y
     );
 
+    if (this.state === 'ATTACK') {
+      // Draws the player's pokemon move 1
+      this.ctx.fillText(
+        this.playerPokemons[this.playerPokemonIndex].moves[0].name,
+        MOVES_POSITION.MOVE_1.x,
+        MOVES_POSITION.MOVE_1.y
+      );
+
+      // Draws the player's pokemon move 2
+      this.ctx.fillText(
+        this.playerPokemons[this.playerPokemonIndex].moves[1].name,
+        MOVES_POSITION.MOVE_2.x,
+        MOVES_POSITION.MOVE_2.y
+      );
+
+      // Draws the player's pokemon move 3
+      this.ctx.fillText(
+        this.playerPokemons[this.playerPokemonIndex].moves[2].name,
+        MOVES_POSITION.MOVE_3.x,
+        MOVES_POSITION.MOVE_3.y
+      );
+
+      // Draws the player's pokemon move 4
+      this.ctx.fillText(
+        this.playerPokemons[this.playerPokemonIndex].moves[3].name,
+        MOVES_POSITION.MOVE_4.x,
+        MOVES_POSITION.MOVE_4.y
+      );
+    }
+  };
+
+  #drawBattleMenu = () => {
     if (this.state === 'SELECTION') {
       // Draws the Move Selector
       this.ctx.beginPath();
@@ -174,7 +221,7 @@ class Battle {
       this.ctx.fill();
     }
 
-    if (this.state === 'ATTACK') {
+    if (this.state === 'ATTACK' || this.state === 'ITEMS') {
       // Draws the Move Selector
       this.ctx.beginPath();
       this.ctx.moveTo(
@@ -202,25 +249,33 @@ class Battle {
 
     if (this.state === 'ATTACK')
       window.addEventListener('keydown', this.#movesKeyEvents);
+
+    if (this.state === 'ITEMS') {
+      window.addEventListener('keydown', this.#movesKeyEvents);
+    }
   };
 
   #actionKeyEvents = (event) => {
-    if (event.keyCode === 38) {
+    if (event.keyCode === KEY_CODES.UP) {
       this.selectorY =
         this.selectorY > 0
           ? this.selectorY - ACTION_SELECTOR_POSITION.dy
           : this.selectorY;
     }
 
-    if (event.keyCode === 40) {
+    if (event.keyCode === KEY_CODES.DOWN) {
       this.selectorY =
         this.selectorY < ACTION_SELECTOR_POSITION.dy
           ? this.selectorY + ACTION_SELECTOR_POSITION.dy
           : this.selectorY;
     }
 
-    if (event.keyCode === 13) {
-      this.state = 'ATTACK';
+    if (event.keyCode === KEY_CODES.ENTER) {
+      if (this.selectorY === ACTION_SELECTOR_POSITION.dy) {
+        this.state = 'ITEMS';
+      } else {
+        this.state = 'ATTACK';
+      }
       this.selectorX = 0;
       this.selectorY = 0;
       this.#changeEventListeners();
@@ -228,32 +283,32 @@ class Battle {
   };
 
   #movesKeyEvents = (event) => {
-    if (event.keyCode === 37) {
+    if (event.keyCode === KEY_CODES.LEFT) {
       this.selectorX =
         this.selectorX > 0
           ? this.selectorX - MOVES_SELECTOR_POSITION.dx
           : this.selectorX;
     }
-    if (event.keyCode === 38) {
+    if (event.keyCode === KEY_CODES.UP) {
       this.selectorY =
         this.selectorY > 0
           ? this.selectorY - MOVES_SELECTOR_POSITION.dy
           : this.selectorY;
     }
-    if (event.keyCode === 39) {
+    if (event.keyCode === KEY_CODES.RIGHT) {
       this.selectorX =
         this.selectorX < MOVES_SELECTOR_POSITION.dx
           ? this.selectorX + MOVES_SELECTOR_POSITION.dx
           : this.selectorX;
     }
-    if (event.keyCode === 40) {
+    if (event.keyCode === KEY_CODES.DOWN) {
       this.selectorY =
         this.selectorY < MOVES_SELECTOR_POSITION.dy
           ? this.selectorY + MOVES_SELECTOR_POSITION.dy
           : this.selectorY;
     }
 
-    if (event.keyCode === 27) {
+    if (event.keyCode === KEY_CODES.ESC) {
       this.state = 'SELECTION';
       this.selectorX = 0;
       this.selectorY = 0;

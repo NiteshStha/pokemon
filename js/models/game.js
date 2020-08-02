@@ -3,12 +3,21 @@ class Game {
   ctx;
   gameEngine;
   battle;
+  playerPokemons;
+  opponentPokemons;
+
   constructor() {
     this.canvas = document.getElementById('canvas');
     this.ctx = this.canvas.getContext('2d');
     canvas.width = CANVAS_DIMENSIONS.width;
     canvas.height = CANVAS_DIMENSIONS.height;
-    this.battle = new Battle(this.ctx);
+    this.playerPokemons = [new Pokemon(POKEMON.DRAGONITE)];
+    this.opponentPokemons = [new Pokemon(POKEMON.BLASTOISE)];
+    this.battle = new Battle(
+      this.ctx,
+      this.playerPokemons,
+      this.opponentPokemons
+    );
   }
 
   start = () => {

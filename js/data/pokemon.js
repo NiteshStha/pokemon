@@ -3,6 +3,10 @@ const POKEMON = {
     name: 'Dragonite',
     type: [TYPES.DRAGON, TYPES.FLYING],
     level: 100,
+    sprites: {
+      front: 'DRAGONITE_FRONT',
+      back: 'DRAGONITE_BACK',
+    },
     stats: {
       hp: 386,
       attack: 403,
@@ -47,6 +51,10 @@ const POKEMON = {
     name: 'Blastoise',
     type: TYPES.WATER,
     level: 100,
+    sprites: {
+      front: 'BLASTOISE_FRONT',
+      back: 'BLASTOISE_BACK',
+    },
     stats: {
       hp: 362,
       attack: 291,

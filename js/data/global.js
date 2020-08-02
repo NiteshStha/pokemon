@@ -38,6 +38,11 @@ const OPPONENT_INFO_BAR_DIMENSIONS = {
   y: 40,
 };
 
+const EMPTY_TEXT_DIMENSIONS = {
+  x: 40,
+  y: 588,
+};
+
 const MOVES_BAR_DIMENSIONS = {
   width: 900,
   height: 150,
@@ -106,4 +111,13 @@ const ACTION_SELECTOR_POSITION = {
   y3: 551,
   dx: 0,
   dy: 50,
+};
+
+const KEY_CODES = {
+  ENTER: 13,
+  ESC: 27,
+  LEFT: 37,
+  UP: 38,
+  RIGHT: 39,
+  DOWN: 40,
 };
