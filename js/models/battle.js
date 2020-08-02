@@ -30,10 +30,6 @@ class Battle {
    */
   state = 'SELECTION';
   /**
-   * Process -> 'PROCESS'
-   */
-  matchState = 'PROCESS';
-  /**
    * Move 1 -> 0
    * Move 2 -> 1
    * Move 3 -> 2
@@ -342,32 +338,50 @@ class Battle {
 
   #finishMatch = () => {
     this.state = 'FINISHED';
-    setTimeout(() => {
-      cancelAnimationFrame(game.gameEngine);
-      // Draw Game End Background
-      this.ctx.drawImage(
-        services.getSprite(SPRITE_NAMES.GAME_END),
-        0,
-        0,
-        CANVAS_DIMENSIONS.width,
-        CANVAS_DIMENSIONS.height
+    this.start();
+    cancelAnimationFrame(game.gameEngine);
+    // Draw Game End Background
+    this.ctx.drawImage(
+      services.getSprite(SPRITE_NAMES.GAME_END),
+      0,
+      0,
+      CANVAS_DIMENSIONS.width,
+      CANVAS_DIMENSIONS.height
+    );
+    this.ctx.font = 'bold 32px Nunito';
+    if (this.winner === 'PLAYER') {
+      this.ctx.fillText(
+        'Congratulations, You Win !!!!',
+        GAME_END_MESSAGE_POSITION.playerX,
+        GAME_END_MESSAGE_POSITION.messageY
       );
-      this.ctx.font = 'bold 32px Nunito';
-      if (this.winner === 'PLAYER') {
-        this.ctx.fillText(
-          'Congratulations, You Win !!!!',
-          GAME_END_MESSAGE_POSITION.playerX,
-          GAME_END_MESSAGE_POSITION.y
-        );
-      }
-      if (this.winner === 'OPPONENT') {
-        this.ctx.fillText(
-          'Sorry, You Lose !!!!',
-          GAME_END_MESSAGE_POSITION.opponentX,
-          GAME_END_MESSAGE_POSITION.y
-        );
-      }
-    }, 2000);
+    }
+    if (this.winner === 'OPPONENT') {
+      this.ctx.fillText(
+        'Sorry, You Lose !!!!',
+        GAME_END_MESSAGE_POSITION.opponentX,
+        GAME_END_MESSAGE_POSITION.messageY
+      );
+    }
+
+    this.ctx.font = 'bold 36px Nunito';
+    // Create gradient
+    const gradient = this.ctx.createLinearGradient(
+      0,
+      0,
+      CANVAS_DIMENSIONS.width,
+      0
+    );
+    gradient.addColorStop('0', 'black');
+    gradient.addColorStop('0.5', 'blue');
+    gradient.addColorStop('1.0', 'red');
+    this.ctx.strokeStyle = gradient;
+    this.ctx.strokeText(
+      'Press Enter to Play Again',
+      GAME_END_MESSAGE_POSITION.playX,
+      GAME_END_MESSAGE_POSITION.playY
+    );
+    window.addEventListener('keydown', this.#playAgainEvent);
   };
 
   #changeEventListeners = () => {
@@ -467,6 +481,15 @@ class Battle {
       this.selectorY === MOVES_SELECTOR_POSITION.dy
     ) {
       this.selectedMove = 3;
+    }
+  };
+
+  #playAgainEvent = (event) => {
+    if (event.keyCode === KEY_CODES.ENTER) {
+      window.removeEventListener('keydown', this.#playAgainEvent);
+      window.removeEventListener('keydown', this.#movesKeyEvents);
+      window.removeEventListener('keydown', this.#actionKeyEvents);
+      game.reset();
     }
   };
 }

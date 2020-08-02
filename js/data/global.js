@@ -124,6 +124,8 @@ const KEY_CODES = {
 
 const GAME_END_MESSAGE_POSITION = {
   playerX: 245,
-  opponentX: 335,
-  y: 300,
+  opponentX: 320,
+  messageY: 250,
+  playX: 245,
+  playY: 400,
 };
