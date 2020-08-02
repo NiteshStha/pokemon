@@ -11,8 +11,14 @@ class Game {
     this.ctx = this.canvas.getContext('2d');
     canvas.width = CANVAS_DIMENSIONS.width;
     canvas.height = CANVAS_DIMENSIONS.height;
-    this.playerPokemons = [new Pokemon(POKEMON.DRAGONITE)];
-    this.opponentPokemons = [new Pokemon(POKEMON.BLASTOISE)];
+    this.playerPokemons = [
+      new Pokemon(POKEMON.DRAGONITE),
+      new Pokemon(POKEMON.BLASTOISE),
+    ];
+    this.opponentPokemons = [
+      new Pokemon(POKEMON.BLASTOISE),
+      new Pokemon(POKEMON.DRAGONITE),
+    ];
     this.battle = new Battle(
       this.ctx,
       this.playerPokemons,

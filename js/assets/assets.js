@@ -3,6 +3,7 @@ let SPRITES_COLLECTION;
 
 const SPRITE_URLS = {
   BACKGROUND: './assets/images/background/battle-background.png',
+  GAME_END: './assets/images/background/game-end.png',
   INFO_BAR: './assets/images/background/battle-info-bar.png',
   HEALTH_BAR: './assets/images/background/battle-hitpoints.png',
   MOVES_BAR: './assets/images/background/battle-moves.png',
@@ -21,6 +22,7 @@ const SPRITE_URLS = {
 
 const SPRITE_NAMES = {
   BACKGROUND: 'BACKGROUND',
+  GAME_END: 'GAME_END',
   INFO_BAR: 'INFO_BAR',
   HEALTH_BAR: 'HEALTH_BAR',
   MOVES_BAR: 'MOVES_BAR',

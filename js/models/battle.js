@@ -1,17 +1,38 @@
 class Battle {
+  // The canvas context object
   ctx;
+  // The array of all the player's pokemons
   playerPokemons;
+  // The array of all the opponent's pokemons
   opponentPokemons;
+  // The current player pokemon index in the array
   playerPokemonIndex = 0;
+  // The current opponent pokemon index in the array
   opponentPokemonIndex = 0;
+  // The selector x position
   selectorX = 0;
+  // The selector y position
   selectorY = 0;
+  // The current player's pokemon's full HP
+  playerFullHp;
+  // The current opponent's pokemon's full HP
+  opponentFullHp;
+  /**
+   * Player turn -> 'PLAYER'
+   * Opponent turn -> 'OPPONENT'
+   */
+  turn;
   /**
    * Action Selection -> 'SELECTION'
    * Attack -> 'ATTACK'
    * Items -> 'ITEMS'
+   * Finished -> 'FINISHED'
    */
   state = 'SELECTION';
+  /**
+   * Process -> 'PROCESS'
+   */
+  matchState = 'PROCESS';
   /**
    * Move 1 -> 0
    * Move 2 -> 1
@@ -19,16 +40,28 @@ class Battle {
    * Move 4 -> 3
    */
   selectedMove = 0;
+  /**
+   * Player Wins -> 'PLAYER'
+   * OPPONENT Wins -> 'OPPONENT'
+   */
+  winner = '';
 
   constructor(ctx, playerPokemons, opponentPokemons) {
     this.ctx = ctx;
     this.playerPokemons = playerPokemons;
     this.opponentPokemons = opponentPokemons;
+    this.playerFullHp = this.playerPokemons[this.playerPokemonIndex].stats.hp;
+    this.opponentFullHp = this.opponentPokemons[
+      this.opponentPokemonIndex
+    ].stats.hp;
+    this.turn = 'PLAYER';
     window.addEventListener('keydown', this.#actionKeyEvents);
   }
 
   start = () => {
     this.#drawSprites();
+    this.#drawPokemonInfos();
+    this.#drawBattleMenu();
   };
 
   #drawSprites = () => {
@@ -47,7 +80,7 @@ class Battle {
       PLAYER_HEALTH_BAR_DIMENSIONS.x,
       PLAYER_HEALTH_BAR_DIMENSIONS.y,
       (this.playerPokemons[this.playerPokemonIndex].stats.hp /
-        this.playerPokemons[this.playerPokemonIndex].stats.hp) *
+        this.playerFullHp) *
         PLAYER_HEALTH_BAR_DIMENSIONS.width,
       PLAYER_HEALTH_BAR_DIMENSIONS.height
     );
@@ -67,7 +100,7 @@ class Battle {
       OPPONENT_HEALTH_BAR_DIMENSIONS.x,
       OPPONENT_HEALTH_BAR_DIMENSIONS.y,
       (this.opponentPokemons[this.opponentPokemonIndex].stats.hp /
-        this.opponentPokemons[this.opponentPokemonIndex].stats.hp) *
+        this.opponentFullHp) *
         OPPONENT_HEALTH_BAR_DIMENSIONS.width,
       OPPONENT_HEALTH_BAR_DIMENSIONS.height
     );
@@ -81,7 +114,7 @@ class Battle {
       OPPONENT_INFO_BAR_DIMENSIONS.height
     );
 
-    if (this.state === 'SELECTION') {
+    if (this.state === 'SELECTION' || this.state === 'FINISHED') {
       // Draws the empty actions bar
       this.ctx.drawImage(
         services.getSprite(SPRITE_NAMES.NO_ACTION),
@@ -91,11 +124,28 @@ class Battle {
         MOVES_BAR_DIMENSIONS.height
       );
       this.ctx.font = 'bold 32px Nunito';
-      this.ctx.fillText(
-        'Choose Action',
-        EMPTY_TEXT_DIMENSIONS.x,
-        EMPTY_TEXT_DIMENSIONS.y
-      );
+
+      if (this.state === 'SELECTION') {
+        this.ctx.fillText(
+          'Choose Action',
+          EMPTY_TEXT_DIMENSIONS.x,
+          EMPTY_TEXT_DIMENSIONS.y
+        );
+      }
+      if (this.state === 'FINISHED' && this.winner === 'PLAYER') {
+        this.ctx.fillText(
+          'Trainer Wins !!',
+          EMPTY_TEXT_DIMENSIONS.x,
+          EMPTY_TEXT_DIMENSIONS.y
+        );
+      }
+      if (this.state === 'FINISHED' && this.winner === 'OPPONENT') {
+        this.ctx.fillText(
+          'Opponent Wins !!',
+          EMPTY_TEXT_DIMENSIONS.x,
+          EMPTY_TEXT_DIMENSIONS.y
+        );
+      }
     }
 
     if (this.state === 'ATTACK' || this.state === 'ITEMS') {
@@ -138,9 +188,6 @@ class Battle {
     // Draws the Attack or Items Menu
     this.ctx.fillText('Attack', 745, 560);
     this.ctx.fillText('Items', 750, 610);
-
-    this.#drawPokemonInfos();
-    this.#drawBattleMenu();
   };
 
   #drawPokemonInfos = () => {
@@ -240,6 +287,89 @@ class Battle {
     }
   };
 
+  #handleBattle = () => {
+    if (
+      this.turn === 'PLAYER' &&
+      this.playerPokemons[this.playerPokemonIndex].stats.hp > 0
+    ) {
+      this.playerPokemons[this.playerPokemonIndex].useMove(
+        this.playerPokemons[this.playerPokemonIndex].moves[this.selectedMove],
+        this.opponentPokemons[this.opponentPokemonIndex]
+      );
+      this.turn = 'OPPONENT';
+    }
+    if (
+      this.turn === 'OPPONENT' &&
+      this.opponentPokemons[this.opponentPokemonIndex].stats.hp > 0
+    ) {
+      const RNG = services.RNG(0, 3);
+      this.opponentPokemons[this.opponentPokemonIndex].useMove(
+        this.opponentPokemons[this.opponentPokemonIndex].moves[RNG],
+        this.playerPokemons[this.playerPokemonIndex]
+      );
+      this.turn = 'PLAYER';
+    }
+
+    if (this.playerPokemons[this.playerPokemonIndex].stats.hp <= 0) {
+      this.playerPokemonIndex++;
+      if (this.playerPokemonIndex >= this.playerPokemons.length) {
+        // Equals to length - 1 because after the battle is over the index is set to length - 1 to avoid null exceoption
+        this.playerPokemonIndex--;
+        this.winner = 'OPPONENT';
+        this.#finishMatch();
+      } else {
+        this.playerFullHp = this.playerPokemons[
+          this.playerPokemonIndex
+        ].stats.hp;
+        this.turn = 'PLAYER';
+      }
+    }
+    if (this.opponentPokemons[this.opponentPokemonIndex].stats.hp <= 0) {
+      this.opponentPokemonIndex++;
+      if (this.opponentPokemonIndex >= this.opponentPokemons.length) {
+        // Equals to length - 1 because after the battle is over the index is set to length - 1 to avoid null exceoption
+        this.opponentPokemonIndex--;
+        this.winner = 'PLAYER';
+        this.#finishMatch();
+      } else {
+        this.opponentFullHp = this.opponentPokemons[
+          this.opponentPokemonIndex
+        ].stats.hp;
+        this.turn = 'PLAYER';
+      }
+    }
+  };
+
+  #finishMatch = () => {
+    this.state = 'FINISHED';
+    setTimeout(() => {
+      cancelAnimationFrame(game.gameEngine);
+      // Draw Game End Background
+      this.ctx.drawImage(
+        services.getSprite(SPRITE_NAMES.GAME_END),
+        0,
+        0,
+        CANVAS_DIMENSIONS.width,
+        CANVAS_DIMENSIONS.height
+      );
+      this.ctx.font = 'bold 32px Nunito';
+      if (this.winner === 'PLAYER') {
+        this.ctx.fillText(
+          'Congratulations, You Win !!!!',
+          GAME_END_MESSAGE_POSITION.playerX,
+          GAME_END_MESSAGE_POSITION.y
+        );
+      }
+      if (this.winner === 'OPPONENT') {
+        this.ctx.fillText(
+          'Sorry, You Lose !!!!',
+          GAME_END_MESSAGE_POSITION.opponentX,
+          GAME_END_MESSAGE_POSITION.y
+        );
+      }
+    }, 2000);
+  };
+
   #changeEventListeners = () => {
     window.removeEventListener('keydown', this.#movesKeyEvents);
     window.removeEventListener('keydown', this.#actionKeyEvents);
@@ -306,6 +436,10 @@ class Battle {
         this.selectorY < MOVES_SELECTOR_POSITION.dy
           ? this.selectorY + MOVES_SELECTOR_POSITION.dy
           : this.selectorY;
+    }
+
+    if (event.keyCode === KEY_CODES.ENTER) {
+      this.#handleBattle();
     }
 
     if (event.keyCode === KEY_CODES.ESC) {
