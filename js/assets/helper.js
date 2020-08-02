@@ -5,18 +5,18 @@ const loadImage = (url, key) => {
       name: key,
     };
     image.addEventListener('load', () => {
-      imgObj.image = image;
+      imgObj.sprite = image;
       resolve(imgObj);
     });
     image.src = url;
   });
 };
 
-async function loadAllImages() {
-  let images = [];
-  Object.keys(IMAGE_URLS).forEach((key) => {
-    images.push(loadImage(IMAGE_URLS[key], key));
+async function loadAllSprites() {
+  let sprites = [];
+  Object.keys(SPRITE_URLS).forEach((key) => {
+    sprites.push(loadImage(SPRITE_URLS[key], key));
   });
 
-  IMAGE_COLLECTION = await Promise.all(images);
+  SPRITES_COLLECTION = await Promise.all(sprites);
 }

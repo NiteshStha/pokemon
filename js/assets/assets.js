@@ -1,7 +1,7 @@
 // The Helper Function loadAllImages instantiates this variable.
-let IMAGE_COLLECTION;
+let SPRITES_COLLECTION;
 
-const IMAGE_URLS = {
+const SPRITE_URLS = {
   BACKGROUND: './assets/images/background/battle-background.png',
   INFO_BAR: './assets/images/background/battle-info-bar.png',
   HEALTH_BAR: './assets/images/background/battle-hitpoints.png',
@@ -10,7 +10,7 @@ const IMAGE_URLS = {
   DRAGONITE_BACK: './assets/images/pokemon/dragonite-back.png',
 };
 
-const IMAGES_NAME = {
+const SPRITE_NAMES = {
   BACKGROUND: 'BACKGROUND',
   INFO_BAR: 'INFO_BAR',
   HEALTH_BAR: 'HEALTH_BAR',

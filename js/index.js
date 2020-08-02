@@ -1,5 +1,5 @@
 const game = new Game();
 
-loadAllImages().then(() => {
+loadAllSprites().then(() => {
   game.start();
 });

@@ -12,8 +12,8 @@ const services = {
    * @param {string} name The name of the Image.
    * @returns {number} Returns the Image.
    */
-  getImage: (name) =>
-    IMAGE_COLLECTION.find((image) => image.name === name).image,
+  getSprite: (name) =>
+    SPRITES_COLLECTION.find((sprite) => sprite.name === name).sprite,
 
   /**
    * Get the Effectiveness of the Attack of the Pokemon on the Opponent's Pokemon.
