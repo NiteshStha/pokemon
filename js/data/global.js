@@ -85,3 +85,25 @@ const OPPONENT_POKEMON_LEVEL = {
   x: 220,
   y: 72,
 };
+
+const MOVES_SELECTOR_POSITION = {
+  x1: 32,
+  y1: 538,
+  x2: 32,
+  y2: 548,
+  x3: 42,
+  y3: 543,
+  dx: 330,
+  dy: 65,
+};
+
+const ACTION_SELECTOR_POSITION = {
+  x1: 727,
+  y1: 546,
+  x2: 727,
+  y2: 556,
+  x3: 737,
+  y3: 551,
+  dx: 0,
+  dy: 50,
+};

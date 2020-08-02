@@ -14,6 +14,8 @@ const SPRITE_URLS = {
   BLASTOISE_BACK: './assets/images/pokemon/blastoise-back.png',
   DRAGONITE_FRONT: './assets/images/pokemon/dragonite-front.png',
   DRAGONITE_BACK: './assets/images/pokemon/dragonite-back.png',
+  RAICHU_FRONT: './assets/images/pokemon/raichu-front.png',
+  RAICHU_BACK: './assets/images/pokemon/raichu-back.png',
 };
 
 const SPRITE_NAMES = {
@@ -29,4 +31,6 @@ const SPRITE_NAMES = {
   BLASTOISE_BACK: 'BLASTOISE_BACK',
   DRAGONITE_FRONT: 'DRAGONITE_FRONT',
   DRAGONITE_BACK: 'DRAGONITE_BACK',
+  RAICHU_FRONT: 'RAICHU_FRONT',
+  RAICHU_BACK: 'RAICHU_BACK',
 };
