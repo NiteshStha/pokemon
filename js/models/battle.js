@@ -114,7 +114,7 @@ class Battle {
       OPPONENT_INFO_BAR_DIMENSIONS.height
     );
 
-    if (this.state === 'SELECTION' || this.state === 'FINISHED') {
+    if (this.state === 'SELECTION') {
       // Draws the empty actions bar
       this.ctx.drawImage(
         services.getSprite(SPRITE_NAMES.NO_ACTION),
@@ -125,27 +125,11 @@ class Battle {
       );
       this.ctx.font = 'bold 32px Nunito';
 
-      if (this.state === 'SELECTION') {
-        this.ctx.fillText(
-          'Choose Action',
-          EMPTY_TEXT_DIMENSIONS.x,
-          EMPTY_TEXT_DIMENSIONS.y
-        );
-      }
-      if (this.state === 'FINISHED' && this.winner === 'PLAYER') {
-        this.ctx.fillText(
-          'Trainer Wins !!',
-          EMPTY_TEXT_DIMENSIONS.x,
-          EMPTY_TEXT_DIMENSIONS.y
-        );
-      }
-      if (this.state === 'FINISHED' && this.winner === 'OPPONENT') {
-        this.ctx.fillText(
-          'Opponent Wins !!',
-          EMPTY_TEXT_DIMENSIONS.x,
-          EMPTY_TEXT_DIMENSIONS.y
-        );
-      }
+      this.ctx.fillText(
+        'Choose Action',
+        EMPTY_TEXT_DIMENSIONS.x,
+        EMPTY_TEXT_DIMENSIONS.y
+      );
     }
 
     if (this.state === 'ATTACK' || this.state === 'ITEMS') {
@@ -287,6 +271,32 @@ class Battle {
     }
   };
 
+  #drawWinner = () => {
+    // Draws the empty actions bar
+    this.ctx.drawImage(
+      services.getSprite(SPRITE_NAMES.NO_ACTION),
+      MOVES_BAR_DIMENSIONS.x,
+      MOVES_BAR_DIMENSIONS.y,
+      MOVES_BAR_DIMENSIONS.width,
+      MOVES_BAR_DIMENSIONS.height
+    );
+    this.ctx.font = 'bold 32px Nunito';
+    if (this.winner === 'PLAYER') {
+      this.ctx.fillText(
+        'Trainer Wins !!',
+        EMPTY_TEXT_DIMENSIONS.x,
+        EMPTY_TEXT_DIMENSIONS.y
+      );
+    }
+    if (this.winner === 'OPPONENT') {
+      this.ctx.fillText(
+        'Opponent Wins !!',
+        EMPTY_TEXT_DIMENSIONS.x,
+        EMPTY_TEXT_DIMENSIONS.y
+      );
+    }
+  };
+
   #drawEndScreen = () => {
     this.ctx.drawImage(
       services.getSprite(SPRITE_NAMES.GAME_END),
@@ -392,8 +402,10 @@ class Battle {
   };
 
   #finishMatch = () => {
+    this.#removeEventListeners();
     cancelAnimationFrame(game.gameEngine);
     this.draw();
+    this.#drawWinner();
     setTimeout(() => {
       this.state = 'FINISHED';
       this.draw();
@@ -503,10 +515,14 @@ class Battle {
 
   #playAgainEvent = (event) => {
     if (event.keyCode === KEY_CODES.ENTER) {
-      window.removeEventListener('keydown', this.#playAgainEvent);
-      window.removeEventListener('keydown', this.#movesKeyEvents);
-      window.removeEventListener('keydown', this.#actionKeyEvents);
+      this.#removeEventListeners();
       game.reset();
     }
+  };
+
+  #removeEventListeners = () => {
+    window.removeEventListener('keydown', this.#playAgainEvent);
+    window.removeEventListener('keydown', this.#movesKeyEvents);
+    window.removeEventListener('keydown', this.#actionKeyEvents);
   };
 }
