@@ -29,7 +29,7 @@ class Game {
   start = () => {
     this.gameEngine = requestAnimationFrame(() => this.start());
     this.ctx.clearRect(0, 0, CANVAS_DIMENSIONS.width, CANVAS_DIMENSIONS.height);
-    this.battle.start();
+    this.battle.draw();
   };
 
   reset = () => {

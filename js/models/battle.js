@@ -54,10 +54,14 @@ class Battle {
     window.addEventListener('keydown', this.#actionKeyEvents);
   }
 
-  start = () => {
-    this.#drawSprites();
-    this.#drawPokemonInfos();
-    this.#drawBattleMenu();
+  draw = () => {
+    if (this.state === 'FINISHED') {
+      this.#drawEndScreen();
+    } else {
+      this.#drawSprites();
+      this.#drawPokemonInfos();
+      this.#drawBattleMenu();
+    }
   };
 
   #drawSprites = () => {
@@ -283,64 +287,7 @@ class Battle {
     }
   };
 
-  #handleBattle = () => {
-    if (
-      this.turn === 'PLAYER' &&
-      this.playerPokemons[this.playerPokemonIndex].stats.hp > 0
-    ) {
-      this.playerPokemons[this.playerPokemonIndex].useMove(
-        this.playerPokemons[this.playerPokemonIndex].moves[this.selectedMove],
-        this.opponentPokemons[this.opponentPokemonIndex]
-      );
-      this.turn = 'OPPONENT';
-    }
-    if (
-      this.turn === 'OPPONENT' &&
-      this.opponentPokemons[this.opponentPokemonIndex].stats.hp > 0
-    ) {
-      const RNG = services.RNG(0, 3);
-      this.opponentPokemons[this.opponentPokemonIndex].useMove(
-        this.opponentPokemons[this.opponentPokemonIndex].moves[RNG],
-        this.playerPokemons[this.playerPokemonIndex]
-      );
-      this.turn = 'PLAYER';
-    }
-
-    if (this.playerPokemons[this.playerPokemonIndex].stats.hp <= 0) {
-      this.playerPokemonIndex++;
-      if (this.playerPokemonIndex >= this.playerPokemons.length) {
-        // Equals to length - 1 because after the battle is over the index is set to length - 1 to avoid null exceoption
-        this.playerPokemonIndex--;
-        this.winner = 'OPPONENT';
-        this.#finishMatch();
-      } else {
-        this.playerFullHp = this.playerPokemons[
-          this.playerPokemonIndex
-        ].stats.hp;
-        this.turn = 'PLAYER';
-      }
-    }
-    if (this.opponentPokemons[this.opponentPokemonIndex].stats.hp <= 0) {
-      this.opponentPokemonIndex++;
-      if (this.opponentPokemonIndex >= this.opponentPokemons.length) {
-        // Equals to length - 1 because after the battle is over the index is set to length - 1 to avoid null exceoption
-        this.opponentPokemonIndex--;
-        this.winner = 'PLAYER';
-        this.#finishMatch();
-      } else {
-        this.opponentFullHp = this.opponentPokemons[
-          this.opponentPokemonIndex
-        ].stats.hp;
-        this.turn = 'PLAYER';
-      }
-    }
-  };
-
-  #finishMatch = () => {
-    this.state = 'FINISHED';
-    this.start();
-    cancelAnimationFrame(game.gameEngine);
-    // Draw Game End Background
+  #drawEndScreen = () => {
     this.ctx.drawImage(
       services.getSprite(SPRITE_NAMES.GAME_END),
       0,
@@ -381,7 +328,77 @@ class Battle {
       GAME_END_MESSAGE_POSITION.playX,
       GAME_END_MESSAGE_POSITION.playY
     );
-    window.addEventListener('keydown', this.#playAgainEvent);
+  };
+
+  #handleBattle = () => {
+    if (
+      this.turn === 'PLAYER' &&
+      this.playerPokemons[this.playerPokemonIndex].stats.hp > 0
+    ) {
+      this.playerPokemons[this.playerPokemonIndex].useMove(
+        this.playerPokemons[this.playerPokemonIndex].moves[this.selectedMove],
+        this.opponentPokemons[this.opponentPokemonIndex]
+      );
+      this.turn = 'OPPONENT';
+    }
+    if (
+      this.turn === 'OPPONENT' &&
+      this.opponentPokemons[this.opponentPokemonIndex].stats.hp > 0
+    ) {
+      const RNG = services.RNG(0, 3);
+      this.opponentPokemons[this.opponentPokemonIndex].useMove(
+        this.opponentPokemons[this.opponentPokemonIndex].moves[RNG],
+        this.playerPokemons[this.playerPokemonIndex]
+      );
+      this.turn = 'PLAYER';
+    }
+
+    if (this.playerPokemons[this.playerPokemonIndex].stats.hp <= 0) {
+      this.playerPokemonIndex++;
+      if (
+        this.playerPokemonIndex >= this.playerPokemons.length &&
+        this.winner === ''
+      ) {
+        // Equals to length - 1 because after the battle is over the index is set to length - 1 to avoid null exception
+        this.playerPokemonIndex--;
+        this.winner = 'OPPONENT';
+        this.#finishMatch();
+      }
+      if (this.state !== 'FINISHED') {
+        this.playerFullHp = this.playerPokemons[
+          this.playerPokemonIndex
+        ].stats.hp;
+        this.turn = 'PLAYER';
+      }
+    }
+    if (this.opponentPokemons[this.opponentPokemonIndex].stats.hp <= 0) {
+      this.opponentPokemonIndex++;
+      if (
+        this.opponentPokemonIndex >= this.opponentPokemons.length &&
+        this.winner === ''
+      ) {
+        // Equals to length - 1 because after the battle is over the index is set to length - 1 to avoid null exception
+        this.opponentPokemonIndex--;
+        this.winner = 'PLAYER';
+        this.#finishMatch();
+      }
+      if (this.state !== 'FINISHED') {
+        this.opponentFullHp = this.opponentPokemons[
+          this.opponentPokemonIndex
+        ].stats.hp;
+        this.turn = 'PLAYER';
+      }
+    }
+  };
+
+  #finishMatch = () => {
+    cancelAnimationFrame(game.gameEngine);
+    this.draw();
+    setTimeout(() => {
+      this.state = 'FINISHED';
+      this.draw();
+      window.addEventListener('keydown', this.#playAgainEvent);
+    }, 2000);
   };
 
   #changeEventListeners = () => {
