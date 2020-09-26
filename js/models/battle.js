@@ -54,6 +54,9 @@ class Battle {
     window.addEventListener('keydown', this.#actionKeyEvents);
   }
 
+  /**
+   * Draws all the required sprites and texts in the game
+   */
   draw = () => {
     if (this.state === 'FINISHED') {
       this.#drawEndScreen();
@@ -64,6 +67,9 @@ class Battle {
     }
   };
 
+  /**
+   * Draws the sprites of the game
+   */
   #drawSprites = () => {
     // Draws the battle background
     this.ctx.drawImage(
@@ -174,6 +180,9 @@ class Battle {
     this.ctx.fillText('Items', 750, 610);
   };
 
+  /**
+   * Draws the text infos such as pokemon name and levels
+   */
   #drawPokemonInfos = () => {
     // Styling the fonts
     this.ctx.font = 'bold 22px Nunito';
@@ -233,6 +242,9 @@ class Battle {
     }
   };
 
+  /**
+   * Draws the battle menu i.e. the moves lists and items
+   */
   #drawBattleMenu = () => {
     if (this.state === 'SELECTION') {
       // Draws the Move Selector
@@ -271,7 +283,10 @@ class Battle {
     }
   };
 
-  #drawWinner = () => {
+  /**
+   * Draws an Empty menu for displaying infos
+   */
+  #drawEmptyScreen = () => {
     // Draws the empty actions bar
     this.ctx.drawImage(
       services.getSprite(SPRITE_NAMES.NO_ACTION),
@@ -280,6 +295,13 @@ class Battle {
       MOVES_BAR_DIMENSIONS.width,
       MOVES_BAR_DIMENSIONS.height
     );
+  };
+
+  /**
+   * Draws the winner of the battle after the match has finished
+   */
+  #drawWinner = () => {
+    this.#drawEmptyScreen();
     this.ctx.font = 'bold 32px Nunito';
     if (this.winner === 'PLAYER') {
       this.ctx.fillText(
@@ -297,6 +319,9 @@ class Battle {
     }
   };
 
+  /**
+   * Draws the end screen after the game is finished
+   */
   #drawEndScreen = () => {
     this.ctx.drawImage(
       services.getSprite(SPRITE_NAMES.GAME_END),
@@ -340,29 +365,80 @@ class Battle {
     );
   };
 
+  // Handle the pokemon battles
   #handleBattle = () => {
+    this.#getPlayerAttack();
+  };
+
+  /**
+   * Get the player's pokemon attack
+   */
+  #getPlayerAttack = () => {
     if (
       this.turn === 'PLAYER' &&
       this.playerPokemons[this.playerPokemonIndex].stats.hp > 0
     ) {
-      this.playerPokemons[this.playerPokemonIndex].useMove(
-        this.playerPokemons[this.playerPokemonIndex].moves[this.selectedMove],
-        this.opponentPokemons[this.opponentPokemonIndex]
+      cancelAnimationFrame(game.gameEngine);
+      this.#drawEmptyScreen();
+      this.ctx.fillText(
+        `Player's ${this.playerPokemons[this.playerPokemonIndex].name} used ${
+          this.playerPokemons[this.playerPokemonIndex].moves[this.selectedMove]
+            .name
+        }`,
+        EMPTY_TEXT_DIMENSIONS.x,
+        EMPTY_TEXT_DIMENSIONS.y
       );
-      this.turn = 'OPPONENT';
+      setTimeout(() => {
+        game.start();
+        this.playerPokemons[this.playerPokemonIndex].useMove(
+          this.playerPokemons[this.playerPokemonIndex].moves[this.selectedMove],
+          this.opponentPokemons[this.opponentPokemonIndex]
+        );
+        this.draw();
+        this.turn = 'OPPONENT';
+        this.#getOpponentAttack();
+        this.#checkPokemonFaint();
+      }, 1500);
     }
+  };
+
+  /**
+   * Get the opponent's pokemon attack
+   */
+  #getOpponentAttack = () => {
     if (
       this.turn === 'OPPONENT' &&
       this.opponentPokemons[this.opponentPokemonIndex].stats.hp > 0
     ) {
       const RNG = services.RNG(0, 3);
-      this.opponentPokemons[this.opponentPokemonIndex].useMove(
-        this.opponentPokemons[this.opponentPokemonIndex].moves[RNG],
-        this.playerPokemons[this.playerPokemonIndex]
+      cancelAnimationFrame(game.gameEngine);
+      this.#drawEmptyScreen();
+      this.ctx.fillText(
+        `Opponent's ${
+          this.opponentPokemons[this.opponentPokemonIndex].name
+        } used ${
+          this.opponentPokemons[this.opponentPokemonIndex].moves[RNG].name
+        }`,
+        EMPTY_TEXT_DIMENSIONS.x,
+        EMPTY_TEXT_DIMENSIONS.y
       );
-      this.turn = 'PLAYER';
+      setTimeout(() => {
+        game.start();
+        this.opponentPokemons[this.opponentPokemonIndex].useMove(
+          this.opponentPokemons[this.opponentPokemonIndex].moves[RNG],
+          this.playerPokemons[this.playerPokemonIndex]
+        );
+        this.draw();
+        this.turn = 'PLAYER';
+        this.#checkPokemonFaint();
+      }, 1500);
     }
+  };
 
+  /**
+   * Check whether any of the pokemon has fainted
+   */
+  #checkPokemonFaint = () => {
     if (this.playerPokemons[this.playerPokemonIndex].stats.hp <= 0) {
       this.playerPokemonIndex++;
       if (
@@ -401,6 +477,9 @@ class Battle {
     }
   };
 
+  /**
+   * End the game
+   */
   #finishMatch = () => {
     this.#removeEventListeners();
     cancelAnimationFrame(game.gameEngine);
