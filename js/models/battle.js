@@ -377,6 +377,7 @@ class Battle {
       this.turn === 'PLAYER' &&
       this.playerPokemons[this.playerPokemonIndex].stats.hp > 0
     ) {
+      this.#removeEventListeners();
       cancelAnimationFrame(game.gameEngine);
       this.#drawEmptyScreen();
       this.ctx.fillText(
@@ -397,6 +398,7 @@ class Battle {
         this.turn = 'OPPONENT';
         this.#getOpponentAttack();
         this.#checkPokemonFaint();
+        this.#changeEventListeners();
       }, 1500);
     }
   };
@@ -409,6 +411,7 @@ class Battle {
       this.turn === 'OPPONENT' &&
       this.opponentPokemons[this.opponentPokemonIndex].stats.hp > 0
     ) {
+      this.#removeEventListeners();
       const RNG = services.RNG(0, 3);
       cancelAnimationFrame(game.gameEngine);
       this.#drawEmptyScreen();
@@ -430,6 +433,7 @@ class Battle {
         this.draw();
         this.turn = 'PLAYER';
         this.#checkPokemonFaint();
+        this.#changeEventListeners();
       }, 1500);
     }
   };
