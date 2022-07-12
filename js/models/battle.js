@@ -47,9 +47,8 @@ class Battle {
     this.playerPokemons = playerPokemons;
     this.opponentPokemons = opponentPokemons;
     this.playerFullHp = this.playerPokemons[this.playerPokemonIndex].stats.hp;
-    this.opponentFullHp = this.opponentPokemons[
-      this.opponentPokemonIndex
-    ].stats.hp;
+    this.opponentFullHp =
+      this.opponentPokemons[this.opponentPokemonIndex].stats.hp;
     this.turn = 'PLAYER';
     window.addEventListener('keydown', this.#actionKeyEvents);
   }
@@ -80,7 +79,7 @@ class Battle {
       BATTLE_BACK_DIMENSIONS.height
     );
 
-    // Draws the player health barc
+    // Draws the player health bar
     this.ctx.drawImage(
       services.getSprite(SPRITE_NAMES.HEALTH_BAR),
       PLAYER_HEALTH_BAR_DIMENSIONS.x,
@@ -289,7 +288,7 @@ class Battle {
   #drawEmptyScreen = () => {
     // Draws the empty actions bar
     this.ctx.drawImage(
-      services.getSprite(SPRITE_NAMES.NO_ACTION),
+      services.getSprite(SPRITE_NAMES.OVERLAY_MESSAGE),
       MOVES_BAR_DIMENSIONS.x,
       MOVES_BAR_DIMENSIONS.y,
       MOVES_BAR_DIMENSIONS.width,
@@ -439,41 +438,64 @@ class Battle {
    * Check whether any of the pokemon has fainted
    */
   #checkPokemonFaint = () => {
+    // Check if player's pokemon fainted
     if (this.playerPokemons[this.playerPokemonIndex].stats.hp <= 0) {
-      this.playerPokemonIndex++;
-      if (
-        this.playerPokemonIndex >= this.playerPokemons.length &&
-        this.winner === ''
-      ) {
-        // Equals to length - 1 because after the battle is over the index is set to length - 1 to avoid null exception
-        this.playerPokemonIndex--;
-        this.winner = 'OPPONENT';
-        this.#finishMatch();
-      }
-      if (this.state !== 'FINISHED') {
-        this.playerFullHp = this.playerPokemons[
-          this.playerPokemonIndex
-        ].stats.hp;
-        this.turn = 'PLAYER';
-      }
+      cancelAnimationFrame(game.gameEngine);
+      this.#drawEmptyScreen();
+      this.ctx.fillText(
+        `Player's ${this.playerPokemons[this.playerPokemonIndex].name} fainted`,
+        EMPTY_TEXT_DIMENSIONS.x,
+        EMPTY_TEXT_DIMENSIONS.y
+      );
+      setTimeout(() => {
+        game.start();
+        this.playerPokemonIndex++;
+        if (
+          this.playerPokemonIndex >= this.playerPokemons.length &&
+          this.winner === ''
+        ) {
+          // Equals to length - 1 because after the battle is over the index is set to length - 1 to avoid null exception
+          this.playerPokemonIndex--;
+          this.winner = 'OPPONENT';
+          this.#finishMatch();
+        }
+        if (this.state !== 'FINISHED') {
+          this.playerFullHp =
+            this.playerPokemons[this.playerPokemonIndex].stats.hp;
+          this.turn = 'PLAYER';
+        }
+      }, 2000);
     }
+
+    // Check if opponent's pokemon fainted
     if (this.opponentPokemons[this.opponentPokemonIndex].stats.hp <= 0) {
-      this.opponentPokemonIndex++;
-      if (
-        this.opponentPokemonIndex >= this.opponentPokemons.length &&
-        this.winner === ''
-      ) {
-        // Equals to length - 1 because after the battle is over the index is set to length - 1 to avoid null exception
-        this.opponentPokemonIndex--;
-        this.winner = 'PLAYER';
-        this.#finishMatch();
-      }
-      if (this.state !== 'FINISHED') {
-        this.opponentFullHp = this.opponentPokemons[
-          this.opponentPokemonIndex
-        ].stats.hp;
-        this.turn = 'PLAYER';
-      }
+      cancelAnimationFrame(game.gameEngine);
+      this.#drawEmptyScreen();
+      this.ctx.fillText(
+        `Opponent's ${
+          this.opponentPokemons[this.opponentPokemonIndex].name
+        } used fainted`,
+        EMPTY_TEXT_DIMENSIONS.x,
+        EMPTY_TEXT_DIMENSIONS.y
+      );
+      setTimeout(() => {
+        game.start();
+        this.opponentPokemonIndex++;
+        if (
+          this.opponentPokemonIndex >= this.opponentPokemons.length &&
+          this.winner === ''
+        ) {
+          // Equals to length - 1 because after the battle is over the index is set to length - 1 to avoid null exception
+          this.opponentPokemonIndex--;
+          this.winner = 'PLAYER';
+          this.#finishMatch();
+        }
+        if (this.state !== 'FINISHED') {
+          this.opponentFullHp =
+            this.opponentPokemons[this.opponentPokemonIndex].stats.hp;
+          this.turn = 'PLAYER';
+        }
+      }, 2000);
     }
   };
 

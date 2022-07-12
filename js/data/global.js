@@ -39,7 +39,7 @@ const OPPONENT_INFO_BAR_DIMENSIONS = {
 };
 
 const EMPTY_TEXT_DIMENSIONS = {
-  x: 40,
+  x: 60,
   y: 588,
 };
 
