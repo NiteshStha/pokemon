@@ -22,17 +22,8 @@ class Pokemon {
   };
 
   useMove = (attack, opponentPokemon) => {
-    opponentPokemon.stats.hp -= services.getDamage(
-      attack,
-      this,
-      opponentPokemon
-    );
+    const damage = services.getDamage(attack, this, opponentPokemon);
+    opponentPokemon.stats.hp -= damage;
+    return damage;
   };
 }
-
-// const pk1 = new Pokemon(POKEMON.DRAGONITE);
-// const pk2 = new Pokemon(POKEMON.BLASTOISE);
-// pk1.useMove(pk1.moves[1], pk2);
-// console.log(pk2.stats.hp);
-// pk2.useMove(pk2.moves[0], pk1);
-// console.log(pk1.stats.hp);

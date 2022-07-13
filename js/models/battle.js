@@ -379,27 +379,21 @@ class Battle {
     ) {
       this.#removeEventListeners();
       cancelAnimationFrame(game.gameEngine);
-      this.#drawEmptyScreen();
-      this.ctx.fillText(
-        `Player's ${this.playerPokemons[this.playerPokemonIndex].name} used ${
-          this.playerPokemons[this.playerPokemonIndex].moves[this.selectedMove]
-            .name
-        }`,
-        EMPTY_TEXT_DIMENSIONS.x,
-        EMPTY_TEXT_DIMENSIONS.y
+      this.#drawAndUsePokemonAttack(
+        true,
+        this.playerPokemons[this.playerPokemonIndex],
+        this.playerPokemons[this.playerPokemonIndex].moves[this.selectedMove],
+        this.opponentPokemons[this.opponentPokemonIndex]
       );
+
       setTimeout(() => {
         game.start();
-        this.playerPokemons[this.playerPokemonIndex].useMove(
-          this.playerPokemons[this.playerPokemonIndex].moves[this.selectedMove],
-          this.opponentPokemons[this.opponentPokemonIndex]
-        );
         this.draw();
         this.turn = 'OPPONENT';
         this.#getOpponentAttack();
         this.#checkPokemonFaint();
         this.#changeEventListeners();
-      }, 1500);
+      }, 4000);
     }
   };
 
@@ -414,28 +408,61 @@ class Battle {
       this.#removeEventListeners();
       const RNG = services.RNG(0, 3);
       cancelAnimationFrame(game.gameEngine);
-      this.#drawEmptyScreen();
-      this.ctx.fillText(
-        `Opponent's ${
-          this.opponentPokemons[this.opponentPokemonIndex].name
-        } used ${
-          this.opponentPokemons[this.opponentPokemonIndex].moves[RNG].name
-        }`,
-        EMPTY_TEXT_DIMENSIONS.x,
-        EMPTY_TEXT_DIMENSIONS.y
+      this.#drawAndUsePokemonAttack(
+        false,
+        this.opponentPokemons[this.opponentPokemonIndex],
+        this.opponentPokemons[this.opponentPokemonIndex].moves[RNG],
+        this.playerPokemons[this.playerPokemonIndex]
       );
+
       setTimeout(() => {
         game.start();
-        this.opponentPokemons[this.opponentPokemonIndex].useMove(
-          this.opponentPokemons[this.opponentPokemonIndex].moves[RNG],
-          this.playerPokemons[this.playerPokemonIndex]
-        );
         this.draw();
         this.turn = 'PLAYER';
         this.#checkPokemonFaint();
         this.#changeEventListeners();
-      }, 1500);
+      }, 4000);
     }
+  };
+
+  #drawAndUsePokemonAttack = (player, attPokemon, move, defPokemon) => {
+    // Drawing attack details
+    const trainer = player ? 'Player' : 'Opponent';
+    this.#drawEmptyScreen();
+    this.ctx.fillText(
+      `${trainer}'s ${attPokemon.name} used ${move.name}`,
+      EMPTY_TEXT_DIMENSIONS.x,
+      EMPTY_TEXT_DIMENSIONS.y
+    );
+
+    // Drawing attack effectiveness
+    setTimeout(() => {
+      // Using the attack and updating damage for the defending pokemon
+      const damage = attPokemon.useMove(move, defPokemon);
+
+      const effectiveness = services.getEffectiveness(
+        move.type,
+        defPokemon.type
+      );
+      let effectivenessMessage = '';
+
+      if (effectiveness === 0)
+        effectivenessMessage = 'The attack had no effect';
+      if (effectiveness === 1)
+        effectivenessMessage = 'The attack was effective';
+      if (effectiveness === 0.5)
+        effectivenessMessage = 'The attack was not very effective';
+      if (effectiveness === 2)
+        effectivenessMessage = 'The attack was super effective';
+      if (damage === 0) effectivenessMessage = 'The attack missed the target';
+
+      this.#drawEmptyScreen();
+      this.ctx.fillText(
+        effectivenessMessage,
+        EMPTY_TEXT_DIMENSIONS.x,
+        EMPTY_TEXT_DIMENSIONS.y
+      );
+    }, 2000);
   };
 
   /**
