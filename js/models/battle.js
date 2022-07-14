@@ -508,7 +508,7 @@ class Battle {
       this.ctx.fillText(
         `Opponent's ${
           this.opponentPokemons[this.opponentPokemonIndex].name
-        } used fainted`,
+        } fainted`,
         EMPTY_TEXT_DIMENSIONS.x,
         EMPTY_TEXT_DIMENSIONS.y
       );
