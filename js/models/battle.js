@@ -438,7 +438,8 @@ class Battle {
     // Drawing attack effectiveness
     setTimeout(() => {
       // Using the attack and updating damage for the defending pokemon
-      const damage = attPokemon.useMove(move, defPokemon);
+      const damage = attPokemon.getDamage(move, defPokemon);
+      defPokemon.stats.hp -= damage;
 
       const effectiveness = services.getEffectiveness(
         move.type,
@@ -453,6 +454,8 @@ class Battle {
       if (effectiveness === 0.5)
         effectivenessMessage = 'The attack was not very effective';
       if (effectiveness === 2)
+        effectivenessMessage = 'The attack was very effective';
+      if (effectiveness > 2)
         effectivenessMessage = 'The attack was super effective';
       if (damage === 0) effectivenessMessage = 'The attack missed the target';
 
@@ -556,7 +559,7 @@ class Battle {
       window.addEventListener('keydown', this.#movesKeyEvents);
 
     if (this.state === 'ITEMS') {
-      window.addEventListener('keydown', this.#movesKeyEvents);
+      window.addEventListener('keydown', this.#itemsKeyEvents);
     }
   };
 
@@ -587,7 +590,7 @@ class Battle {
     }
   };
 
-  #movesKeyEvents = (event) => {
+  #movesAndItemsKeyBindSetup = (event, eventFrom) => {
     if (event.keyCode === KEY_CODES.LEFT) {
       this.selectorX =
         this.selectorX > 0
@@ -613,8 +616,12 @@ class Battle {
           : this.selectorY;
     }
 
-    if (event.keyCode === KEY_CODES.ENTER) {
+    if (event.keyCode === KEY_CODES.ENTER && eventFrom === 'moves') {
       this.#handleBattle();
+    }
+
+    if (event.keyCode === KEY_CODES.ENTER && eventFrom === 'items') {
+      // this.#handleItems();
     }
 
     if (event.keyCode === KEY_CODES.ESC) {
@@ -623,7 +630,10 @@ class Battle {
       this.selectorY = 0;
       this.#changeEventListeners();
     }
+  };
 
+  #movesKeyEvents = (event) => {
+    this.#movesAndItemsKeyBindSetup(event, 'moves');
     this.#updateSelectedMove();
   };
 
@@ -643,6 +653,10 @@ class Battle {
     ) {
       this.selectedMove = 3;
     }
+  };
+
+  #itemsKeyEvents = (event) => {
+    this.#movesAndItemsKeyBindSetup(event, 'items');
   };
 
   #playAgainEvent = (event) => {

@@ -21,9 +21,8 @@ class Pokemon {
     return Object.keys(TYPES).find((key) => TYPES[key] === this.type);
   };
 
-  useMove = (attack, opponentPokemon) => {
+  getDamage = (attack, opponentPokemon) => {
     const damage = services.getDamage(attack, this, opponentPokemon);
-    opponentPokemon.stats.hp -= damage;
     return damage;
   };
 }
